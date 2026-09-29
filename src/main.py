@@ -2,6 +2,7 @@ from tkinter import *
 import time
 
 MAX_WEIGHT = 630
+MAX_FLOOR = 10
 is_emergency = False
 
 def emergency():
@@ -21,9 +22,29 @@ def move():
         result_field.insert(END, "аварійне зупинення руху\n")
         return
 
-    weight = float(weight_field.get())
-    current_floor = int(current_floor_field.get())
-    preferred_floor = int(preferred_floor_field.get())
+    params = (weight_field.get(), current_floor_field.get(), preferred_floor_field.get())
+    if "" in params:
+        result_field.insert(END, "усі поля повинні бути заповнені!")
+        return
+
+
+
+    try:
+        weight = float(weight_field.get())
+        current_floor = int(current_floor_field.get())
+        preferred_floor = int(preferred_floor_field.get())
+    except ValueError:
+        result_field.insert(END, "значення повинні бути числовими!")
+        return
+
+
+    if any(p <= 0 for p in (weight, current_floor, preferred_floor)):
+        result_field.insert(END, "значення повинні бути додатніми!")
+        return
+
+    if any(f > MAX_FLOOR for f in (current_floor, preferred_floor)):
+        result_field.insert(END, f"будівля має {MAX_FLOOR} поверхів!")
+        return
 
     match door_state.get():
         case "open":
